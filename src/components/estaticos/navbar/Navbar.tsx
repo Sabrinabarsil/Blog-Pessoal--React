@@ -5,7 +5,7 @@ import {useNavigate } from 'react-router-dom'
 import './Navbar.css'
 import { useSelector } from 'react-redux';
 import { TokenState } from '../../../store/tokens/tokensReducer';
-import { useDispatch } from "react-redux";
+import { useDispatch } from 'react-redux';
 import { addToken } from '../../../store/tokens/actions';
 
 function Navbar() {
