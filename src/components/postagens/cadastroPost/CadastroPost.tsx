@@ -11,47 +11,46 @@ import { toast } from 'react-toastify';
 
 function CadastroPost() {
     let navigate = useNavigate();
-    const { id } = useParams<{ id: string }>();
-    const [temas, setTemas] = useState<Tema[]>([])
+    const {id} = useParams<{id: string}>();
+    const [temas, setTemas] = useState<Tema[]>([]);
     const token = useSelector<TokenState, TokenState["tokens"]>(
         (state) => state.tokens
-      );
+    );
+    const [tema, setTema] = useState<Tema>({
+        id: 0,
+        descricao: ''
+    })
 
     useEffect(() => {
-        if (token == "") {
-            toast.error('Você precisa estar logado', {
+        if(token === ''){
+            toast.error('Você precisa estar logado!', {
                 position: "top-right",
                 autoClose: 2000,
                 hideProgressBar: false,
                 closeOnClick: true,
                 pauseOnHover: false,
                 draggable: false,
-                theme: "colored",
+                theme: 'colored',
                 progress: undefined,
             });
-            navigate("/login")
-
+            navigate('/login')
         }
-    }, [token])
+    },[token])
 
-    const [tema, setTema] = useState<Tema>(
-        {
-            id: 0,
-            descricao: ''
-        })
-    const [postagem, setPostagem] = useState<Postagem>({
+    const [postagens, setPostagens] = useState<Postagem>({
         id: 0,
         titulo: '',
         texto: '',
+        data: '',
         tema: null
     })
 
-    useEffect(() => { 
-        setPostagem({
-            ...postagem,
+    useEffect(() => {
+        setPostagens({
+            ...postagens,
             tema: tema
         })
-    }, [tema])
+    },[tema])
 
     useEffect(() => {
         getTemas()
@@ -61,7 +60,7 @@ function CadastroPost() {
     }, [id])
 
     async function getTemas() {
-        await busca("/tema", setTemas, {
+        await busca("/temas", setTemas, {
             headers: {
                 'Authorization': token
             }
@@ -69,7 +68,7 @@ function CadastroPost() {
     }
 
     async function findByIdPostagem(id: string) {
-        await buscaId(`postagens/${id}`, setPostagem, {
+        await buscaId(`postagens/${id}`, setPostagens, {
             headers: {
                 'Authorization': token
             }
@@ -78,8 +77,8 @@ function CadastroPost() {
 
     function updatedPostagem(e: ChangeEvent<HTMLInputElement>) {
 
-        setPostagem({
-            ...postagem,
+        setPostagens({
+            ...postagens,
             [e.target.name]: e.target.value,
             tema: tema
         })
@@ -90,59 +89,58 @@ function CadastroPost() {
         e.preventDefault()
 
         if (id !== undefined) {
-            put(`/postagens`, postagem, setPostagem, {
+            put(`/postagens`, postagens, setPostagens, {
                 headers: {
                     'Authorization': token
                 }
             })
-            toast.success('Postagem atualizada com sucesso', {
+            toast.success('Postagem atualizada com sucesso!', {
                 position: "top-right",
                 autoClose: 2000,
                 hideProgressBar: false,
                 closeOnClick: true,
                 pauseOnHover: false,
                 draggable: false,
-                theme: "colored",
+                theme: 'colored',
                 progress: undefined,
             });
         } else {
-            post(`/postagens`, postagem, setPostagem, {
+            post(`/postagens`, postagens, setPostagens, {
                 headers: {
                     'Authorization': token
                 }
             })
-            toast.success('Postagem cadastrada com sucesso', {
+            toast.success('Postagem cadastrada com sucesso!', {
                 position: "top-right",
                 autoClose: 2000,
                 hideProgressBar: false,
                 closeOnClick: true,
                 pauseOnHover: false,
                 draggable: false,
-                theme: "colored",
+                theme: 'colored',
                 progress: undefined,
             });
         }
         back()
-
     }
 
-    function back() {
-        navigate('/posts')
+    function back(){
+        navigate('/postagens')
     }
 
     return (
         <Container maxWidth="sm" className="topo">
             <form onSubmit={onSubmit}>
                 <Typography variant="h3" color="textSecondary" component="h1" align="center" >Formulário de cadastro postagem</Typography>
-                <TextField value={postagem.titulo} onChange={(e: ChangeEvent<HTMLInputElement>) => updatedPostagem(e)} id="titulo" label="titulo" variant="outlined" name="titulo" margin="normal" fullWidth />
-                <TextField value={postagem.texto} onChange={(e: ChangeEvent<HTMLInputElement>) => updatedPostagem(e)} id="texto" label="texto" name="texto" variant="outlined" margin="normal" fullWidth />
+                <TextField value={postagens.titulo} onChange={(e: ChangeEvent<HTMLInputElement>) => updatedPostagem(e)} id="titulo" label="titulo" variant="outlined" name="titulo" margin="normal" fullWidth />
+                <TextField value={postagens.texto} onChange={(e: ChangeEvent<HTMLInputElement>) => updatedPostagem(e)} id="texto" label="texto" name="texto" variant="outlined" margin="normal" fullWidth />
 
                 <FormControl >
                     <InputLabel id="demo-simple-select-helper-label">Tema </InputLabel>
                     <Select
                         labelId="demo-simple-select-helper-label"
                         id="demo-simple-select-helper"
-                        onChange={(e) => buscaId(`/tema/${e.target.value}`, setTema, {
+                        onChange={(e) => buscaId(`/temas/${e.target.value}`, setTema, {
                             headers: {
                                 'Authorization': token
                             }
